@@ -1,6 +1,8 @@
-#include "pgmp2.h"
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef HEADER
+	#include "headers/pgmp2.h"
+#endif
 
 pgmp2_t load(char* filename){
 	FILE* in = NULL;
@@ -31,7 +33,7 @@ pgmp2_t load(char* filename){
 	for(i = 0; i < height; i++){
 		for(j = 0; j < width; j++){
 			if(feof(in)) break;
-			
+
 			fscanf(in, "%d%*c", &pixel);
 			set(img, i, j, pixel);
 			if(pixel < min){
