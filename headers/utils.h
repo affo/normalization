@@ -69,4 +69,6 @@ void store(pgmp2_t img){
 		}
 		fprintf(out, "\n");
 	}
+
+	fclose(out);
 }
