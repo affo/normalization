@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
     	dest = 0; source = 0;
     	while(1){
     		MPI_Recv(in, DIM, MPI_CHAR, source, tag, MPI_COMM_WORLD, &status);
-    		printf("%s", in);
+    		printf("%s\n", in);
     		MPI_Send(in, DIM, MPI_CHAR, dest, tag, MPI_COMM_WORLD);
     	}
     }
