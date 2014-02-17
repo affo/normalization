@@ -7,19 +7,17 @@ pgmp2_t normalize(pgmp2_t img, int min, int max){
 
 	int pixel, new_pixel, i, j;
 	int effective_min = 255;
-	int effective_max = 0;
 	for(i = 0; i < img.height; i++){
 		for(j = 0; j < img.width; j++){
 			pixel = get(img, i, j);
 			new_pixel = (pixel - img.min) * factor + min;
-			if(new_pixel > effective_max) effective_max = new_pixel;
 			if(new_pixel < effective_min) effective_min = new_pixel;
 			set(img, i, j, new_pixel);
 		}
 	}
 
 	img.min = effective_min;
-	img.max = effective_max;
+	img.max = max;
 
 	return img;
 }

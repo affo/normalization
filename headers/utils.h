@@ -67,6 +67,7 @@ void store(pgmp2_t img){
 		for(j = 0; j < img.width; j++){
 			fprintf(out, "%d ", get(img, i, j));
 		}
+		fseek(out, -1, SEEK_CUR);
 		fprintf(out, "\n");
 	}
 
