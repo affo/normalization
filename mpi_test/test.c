@@ -1,6 +1,7 @@
 #include "mpi.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define DIM 20
 
