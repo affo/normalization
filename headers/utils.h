@@ -4,6 +4,8 @@
 	#include "headers/pgmp2.h"
 #endif
 
+#define MAX_LINE_LENGTH 40
+
 pgmp2_t load(char* filename){
 	FILE* in = NULL;
 	in = fopen(filename, "r");
@@ -16,16 +18,16 @@ pgmp2_t load(char* filename){
 	int width;
 	int height;
 	int max;
-	fscanf(in, "%s%*c", magic);
+	fscanf(in, "%s", magic);
 	if(strcmp(magic, "P2")){
 		printf("Incorrect type of image, need a P2 image\n");
 		fclose(in);
 		exit(-1);
 	}
 
-	fscanf(in, "%d%*c", &width);
-	fscanf(in, "%d%*c", &height);
-	fscanf(in, "%d%*c", &max);
+	fscanf(in, "%d", &width);
+	fscanf(in, "%d", &height);
+	fscanf(in, "%d", &max);
 
 	pgmp2_t img = init(width, height, max);
 	int pixel, i, j;
@@ -34,7 +36,7 @@ pgmp2_t load(char* filename){
 		for(j = 0; j < width; j++){
 			if(feof(in)) break;
 
-			fscanf(in, "%d%*c", &pixel);
+			fscanf(in, "%d", &pixel);
 			set(img, i, j, pixel);
 			if(pixel < min){
 				min = pixel;
@@ -62,13 +64,21 @@ void store(pgmp2_t img){
 	fprintf(out, "%d\n", img.max);
 
 	int i, j;
+	int newline = img.width > MAX_LINE_LENGTH;
+	int pixel_count = 1;
 
 	for(i = 0; i < img.height; i++){
-		for(j = 0; j < img.width; j++){
+		for(j = 0; j < img.width; j++, pixel_count++){
 			fprintf(out, "%d ", get(img, i, j));
+			if(newline && (pixel_count%MAX_LINE_LENGTH == 0)){
+				fprintf(out, "\n");
+				pixel_count = 0;
+			}
 		}
-		fseek(out, -1, SEEK_CUR);
-		fprintf(out, "\n");
+
+		if(!newline){
+			fprintf(out, "\n");
+		}
 	}
 
 	fclose(out);

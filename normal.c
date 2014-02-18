@@ -19,6 +19,6 @@ int main(int argc, char** argv){
 	int new_max = atoi(argv[3]);
 
 	pgmp2_t img = load(argv[1]);
-	img = normalize(img, new_min, new_max);
+	normalize(&img, new_min, new_max);
 	store(img);
 }
