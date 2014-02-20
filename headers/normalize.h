@@ -16,7 +16,7 @@ void normalize(pgmp2_t* img, int new_min, int new_max){
 
 	clock_t t = clock();
 
-	//#pragma omp parallel for schedule(static, chunk) shared(pixels) private(i, new_min, factor, min)
+	#pragma omp parallel for schedule(static, chunk) shared(pixels) private(i) firstprivate(new_min, factor, min)
 		for(i = 0; i < length; i++){
 			pixels[i] = (pixels[i] - min) * factor + new_min;
 		}
