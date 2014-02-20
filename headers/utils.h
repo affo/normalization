@@ -30,19 +30,14 @@ pgmp2_t load(char* filename){
 	fscanf(in, "%d", &height);
 	fscanf(in, "%d", &max);
 
-	pgmp2_t img = init(width, height, max);
+	pgmp2_t img = init(width, height);
 	int pixel, i;
 	int length = img.width * img.height;
-	int min = 255;
 	for(i = 0; i < length && !feof(in); i++){
 		fscanf(in, "%d", &pixel);
 		set(img, i, pixel);
-		if(pixel < min){
-			min = pixel;
-		}
 	}
 
-	img.min = min;
 	fclose(in);
 
 	return img;

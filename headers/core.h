@@ -1,5 +1,5 @@
 #ifndef HEADER
-	#include "headers/pgmp2.h"
+	#include "pgmp2.h"
 	#include "mpi.h"
 #endif
 
@@ -14,8 +14,6 @@ void normalize(pgmp2_t* img, int new_min, int new_max, int numtasks, int root, i
 	int max = img->max;
 	int* pixels = img->pixels;
 	double factor = (float)(new_max - new_min) / (float)(max - min);
-
-	clock_t t = clock();
 
 	int chunk = length / numtasks;
 	int *recvbuf, *sendcounts, *offsets;
@@ -34,17 +32,17 @@ void normalize(pgmp2_t* img, int new_min, int new_max, int numtasks, int root, i
 		  	offsets[i] = i * chunk;
 		}
 		for(int i = 0; i < (numtasks - 1); i++){
-		  sendcounts[i] = chunk;
+			sendcounts[i] = chunk;
 		}
 		sendcounts[numtasks - 1] = length - (chunk * (numtasks - 1));
 	}
 
-	int recvcount = chunk;
-	MPI_Scatterv(pixels, sendcounts, offsets, MPI_INT, recvbuf, recvcount, MPI_INT, root, MPI_COMM_WORLD);
+	clock_t t = clock();
+	MPI_Scatterv(pixels, sendcounts, offsets, MPI_INT, recvbuf, chunk, MPI_INT, root, MPI_COMM_WORLD);
 
-	#pragma omp parallel for shared(recvbuf) private(i) firstprivate(new_min, factor, min)
+	//#pragma omp parallel for shared(recvbuf) private(i) firstprivate(new_min, factor, min)
 		for(i = 0; i < chunk; i++){
-			pixels[i] = (pixels[i] - min) * factor + new_min;
+			recvbuf[i] = (recvbuf[i] - min) * factor + new_min;
 		}
 
 	MPI_Gatherv(recvbuf, chunk, MPI_INT, pixels, sendcounts, offsets, MPI_INT, root, MPI_COMM_WORLD);
@@ -56,34 +54,30 @@ void normalize(pgmp2_t* img, int new_min, int new_max, int numtasks, int root, i
 	img->max = new_max;
 }
 
-int get_max(pgmp2_t img, int numtasks, int root){
+int get_max(pgmp2_t img){
 	int* pixels = img.pixels;
 	int length = img.width * img.height;
-	int recv[numtasks];
-	MPI_Reduce(pixels, recv, length, MPI_INT, MPI_MAX, root, MPI_COMM_WORLD);
 
 	int max = 0;
-	for(int i = 0; i < numtasks; i++){
-		if(recv[i] > max){
-			max = recv[i];
+	#pragma omp parallel for
+		for (int i = 0; i < length; i++) {
+  			#pragma omp critical
+			 	if (pixels[i] > max) max = pixels[i];
 		}
-	}
 
 	return max;
 }
 
-int get_min(pgmp2_t img, int numtasks, int root){
+int get_min(pgmp2_t img){
 	int* pixels = img.pixels;
 	int length = img.width * img.height;
-	int recv[numtasks];
-	MPI_Reduce(pixels, recv, length, MPI_INT, MPI_MIN, root, MPI_COMM_WORLD);
 
 	int min = 255;
-	for(int i = 0; i < numtasks; i++){
-		if(recv[i] < min){
-			min = recv[i];
+	#pragma omp parallel for
+		for (int i = 0; i < length; i++) {
+  			#pragma omp critical
+			 	if (pixels[i] < min) min = pixels[i];
 		}
-	}
 
 	return min;
 }
