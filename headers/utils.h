@@ -30,17 +30,14 @@ pgmp2_t load(char* filename){
 	fscanf(in, "%d", &max);
 
 	pgmp2_t img = init(width, height, max);
-	int pixel, i, j;
+	int pixel, i;
+	int length = img.width * img.height;
 	int min = 255;
-	for(i = 0; i < height; i++){
-		for(j = 0; j < width; j++){
-			if(feof(in)) break;
-
-			fscanf(in, "%d", &pixel);
-			set(img, i, j, pixel);
-			if(pixel < min){
-				min = pixel;
-			}
+	for(i = 0; i < length && !feof(in); i++){
+		fscanf(in, "%d", &pixel);
+		set(img, i, pixel);
+		if(pixel < min){
+			min = pixel;
 		}
 	}
 
@@ -63,21 +60,19 @@ void store(pgmp2_t img){
 	fprintf(out, "%d %d\n", img.width, img.height);
 	fprintf(out, "%d\n", img.max);
 
-	int i, j;
+	int i;
 	int newline = img.width > MAX_LINE_LENGTH;
 	int pixel_count = 1;
-
-	for(i = 0; i < img.height; i++){
-		for(j = 0; j < img.width; j++, pixel_count++){
-			fprintf(out, "%d ", get(img, i, j));
-			if(newline && (pixel_count%MAX_LINE_LENGTH == 0)){
-				fprintf(out, "\n");
-				pixel_count = 0;
-			}
-		}
-
-		if(!newline){
+	int length = img.width * img.height;
+	for(i = 0; i < length; i++, pixel_count++){
+		fprintf(out, "%d ", get(img, i));
+		if(newline && (pixel_count % MAX_LINE_LENGTH == 0)){
 			fprintf(out, "\n");
+			pixel_count = 0;
+		}
+		if(!newline && (pixel_count % img.width == 0)){
+			fprintf(out, "\n");
+			pixel_count = 0;
 		}
 	}
 
