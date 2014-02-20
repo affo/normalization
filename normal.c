@@ -20,18 +20,20 @@ int main(int argc, char** argv){
 	int new_max = atoi(argv[3]);
 
 	pgmp2_t img = load(argv[1]);
-	img.max = get_max(img);
-	img.min = get_min(img);
 	
-	int numtasks, rank, root;
+	int numtasks, rank;
 	MPI_Init(&argc,&argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
+	mpi_env_t env = get_mpi_env(numtasks, 0, rank, img.width * img.height);
 
-	normalize(&img, new_min, new_max, numtasks, root, rank);
+	img.max = get_max(img, env);
+	img.min = get_min(img, env);
+	printf("max %d, min %d\n", img.max, img.min);
+	normalize(&img, new_min, new_max, env);
 
-	MPI_Finalize();
 	if(rank == 0){
 		store(img);
 	}
+	MPI_Finalize();
 }
