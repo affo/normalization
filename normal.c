@@ -1,10 +1,9 @@
-#ifndef HEADER
-#define HEADER
+
 	#include "headers/pgmp2.h"
 	#include "headers/utils.h"
 	#include "headers/core.h"
 	#include "mpi.h"
-#endif
+
 
 #include <time.h>
 

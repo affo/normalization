@@ -8,21 +8,8 @@ typedef struct pgmp2 {
 	int* pixels;
 } pgmp2_t;
 
-pgmp2_t init(int width, int height){
-	pgmp2_t* img = (pgmp2_t*) malloc(sizeof(pgmp2_t));
-	img->width = width;
-	img->height = height;
+pgmp2_t init(int, int);
 
-	//allocating memory for the matrix
-	img->pixels = (int*) malloc(sizeof(int)*width*height);
+int get(pgmp2_t, int);
 
-	return *img;
-}
-
-int get(pgmp2_t img, int i){
-	return img.pixels[i];
-}
-
-void set(pgmp2_t img, int i, int value){
-	img.pixels[i] = value;
-}
+void set(pgmp2_t, int, int);
