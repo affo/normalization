@@ -5,24 +5,25 @@
 #include <omp.h>
 #include <time.h>
 
-void normalize(pgmp2_t* img, int min, int max){
-	double factor = (float)(max - min) / (float)(img->max - img->min);
+void normalize(pgmp2_t* img, int new_min, int new_max){
+	double factor = (float)(new_max - new_min) / (float)(img->max - img->min);
+
+	int i;
+	int length = img->width * img->height;
+	int min = img->min;
+	int* pixels = img->pixels;
+	int chunk = length / omp_get_max_threads();
 
 	clock_t t = clock();
-	int pixel, new_pixel, i;
-	int length = img->width * img->height;
-	int chunki = (img->height) / omp_get_max_threads();
-	int chunkj = (img->width) / omp_get_max_threads();
-	//#pragma omp parallel for schedule(static, chunki) shared(img) private(i, j, pixel, new_pixel)
-		for(i = 0; i < length; i++){
-			pixel = get(*img, i);
-			new_pixel = (pixel - img->min) * factor + min;
-			set(*img, i, new_pixel);
-		}
 
-	img->min = min;
-	img->max = max;
+	//#pragma omp parallel for schedule(static, chunk) shared(pixels) private(i, new_min, factor, min)
+		for(i = 0; i < length; i++){
+			pixels[i] = (pixels[i] - min) * factor + new_min;
+		}
 
 	t = clock() - t;
 	printf("Normalization: %fs\n", ((float)t) / CLOCKS_PER_SEC);
+
+	img->min = new_min;
+	img->max = new_max;
 }
