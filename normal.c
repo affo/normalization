@@ -56,10 +56,9 @@ int main(int argc, char** argv){
 	print_time("Getting MIN", t, rank);
 
 	t = clock();
-	normalize(img, new_min, new_max, env);
+	normalize(&img, new_min, new_max, env);
+	gather_pixels(&img, env);
 	print_time("Normalizing", t, rank);
-
-	gather_pixels(img, env);
 
 	if(rank == 0){
 		t = clock();

@@ -49,9 +49,9 @@ mpi_env_t get_mpi_env(int numtasks, int root, int rank, int length){
 }
 
 
-void normalize(pgmp2_t img, int new_min, int new_max, mpi_env_t env){
-	int min = img.min;
-	int max = img.max;
+void normalize(pgmp2_t* img, int new_min, int new_max, mpi_env_t env){
+	int min = img->min;
+	int max = img->max;
 	double factor = (float)(new_max - new_min) / (float)(max - min);
 
 	int* receive_buffer = env.receive_buffer;
@@ -64,8 +64,8 @@ void normalize(pgmp2_t img, int new_min, int new_max, mpi_env_t env){
 			receive_buffer[i] = (receive_buffer[i] - min) * factor + new_min;
 		}
 
-	img.min = new_min;
-	img.max = new_max;
+	img->min = new_min;
+	img->max = new_max;
 }
 
 int get_max(pgmp2_t img, mpi_env_t env){
@@ -117,8 +117,8 @@ void scatter_pixels(pgmp2_t img, mpi_env_t env){
 	MPI_Scatterv(pixels, buffer_sizes, offsets, MPI_INT, receive_buffer, chunk, MPI_INT, root, MPI_COMM_WORLD);
 }
 
-void gather_pixels(pgmp2_t img, mpi_env_t env){
-	int* pixels = img.pixels;
+void gather_pixels(pgmp2_t* img, mpi_env_t env){
+	int* pixels = img->pixels;
 
 	int* buffer_sizes = env.buffer_sizes;
 	int* offsets = env.offsets;
