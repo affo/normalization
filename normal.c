@@ -3,7 +3,7 @@
 	#include "headers/pgmp2.h"
 	#include "headers/utils.h"
 	#include "headers/core.h"
-	#include <mpi.h>
+	#include "mpi.h"
 #endif
 
 void usage(){
@@ -31,7 +31,7 @@ int main(int argc, char** argv){
 	int max = get_max(img, numtasks, root);
 	int min = get_min(img, numtasks, root);
 
-	normalize(&img, new_min, new_max, numtasks, root);
+	normalize(&img, new_min, new_max, numtasks, root, rank);
 
 	MPI_Finalize();
 	store(img);

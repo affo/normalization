@@ -1,16 +1,17 @@
 #ifndef HEADER
 	#include "headers/pgmp2.h"
-	#include <mpi.h>
+	#include "mpi.h"
 #endif
 
 #include <omp.h>
 #include <time.h>
+#include "mpi.h"
 
-void normalize(pgmp2_t* img, int new_min, int new_max, int numtasks, int root){
+void normalize(pgmp2_t* img, int new_min, int new_max, int numtasks, int root, int rank){
 	int i;
 	int length = img->width * img->height;
 	int min = img->min;
-	int max = img->max
+	int max = img->max;
 	int* pixels = img->pixels;
 	double factor = (float)(new_max - new_min) / (float)(max - min);
 
@@ -38,8 +39,7 @@ void normalize(pgmp2_t* img, int new_min, int new_max, int numtasks, int root){
 		sendcounts[numtasks - 1] = length - (chunk * (numtasks - 1));
 	}
 
-	sendcount = chunk;
-	recvcount = chunk;
+	int recvcount = chunk;
 	MPI_Scatterv(pixels, sendcounts, offsets, MPI_INT, recvbuf, recvcount, MPI_INT, root, MPI_COMM_WORLD);
 
 	#pragma omp parallel for shared(recvbuf) private(i) firstprivate(new_min, factor, min)
@@ -80,7 +80,7 @@ int get_min(pgmp2_t img, int numtasks, int root){
 
 	int min = 255;
 	for(int i = 0; i < numtasks; i++){
-		if(recv[i] < max){
+		if(recv[i] < min){
 			min = recv[i];
 		}
 	}
