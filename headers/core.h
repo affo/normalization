@@ -28,7 +28,7 @@ mpi_env_t get_mpi_env(int numtasks, int root, int rank, int length){
 		chunk = length - (chunk * (numtasks - 1));
 	}
 	env->chunk = chunk;
-	printf("rank: %d, chunk: %d\n", rank, chunk);
+	//printf("rank: %d, chunk: %d\n", rank, chunk);
 		
 	env->receive_buffer = (int*) malloc(sizeof(int)*chunk);
 	
@@ -57,8 +57,10 @@ void normalize(pgmp2_t img, int new_min, int new_max, mpi_env_t env){
 	int* receive_buffer = env.receive_buffer;
 	int chunk = env.chunk;
 
-	//#pragma omp parallel for shared(recvbuf) private(i) firstprivate(new_min, factor, min)
-		for(int i = 0; i < chunk; i++){
+	int i;
+	int chunk_size = chunk / omp_get_max_threads();
+	#pragma omp parallel for schedule(static, chunk_size) shared(receive_buffer) private(i) firstprivate(new_min, factor, min)
+		for(i = 0; i < chunk; i++){
 			receive_buffer[i] = (receive_buffer[i] - min) * factor + new_min;
 		}
 
