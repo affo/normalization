@@ -1,5 +1,6 @@
 #ifndef _CORE_H
 #define _CORE_H
+#include <syslog.h>
 #include "pgmp2.h"
 #include "mpi.h"
 #include "omp.h"
