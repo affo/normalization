@@ -1,5 +1,4 @@
-#Project for Middleware Course
-#A.A. 2013/14 
+#Project for Middleware Course A.A. 2013/14 
 
 ##Abstract
 
@@ -23,4 +22,14 @@ Sample run with ```mpirun```:
 ```normalization/c $ mprun -np 4 a.out ../sample/sample.pmg 10 20```
 
 In this example we use 4 processes and an output range of [10, 20].
+
+##Creating Input Image
+
+We use the _PGM P2_ format for the input image.
+
+To convert an image from any format to _PGM P2_ we recommend to use:
+
+```convert <input-image> -compress none -depth 8 <output-name>.pgm```
+
+Please make sure that the obtained image doesn't contain any comment.
 
