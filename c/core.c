@@ -11,7 +11,6 @@ mpi_env_t get_mpi_env(int numtasks, int root, int rank, int length){
 		chunk = length - (chunk * (numtasks - 1));
 	}
 	env->chunk = chunk;
-	//printf("rank: %d, chunk: %d\n", rank, chunk);
 		
 	env->receive_buffer = (int*) malloc(sizeof(int)*chunk);
 	
@@ -31,26 +30,25 @@ mpi_env_t get_mpi_env(int numtasks, int root, int rank, int length){
 	return *env;
 }
 
-void normalize(pgmp2_t* img, int new_min, int new_max, mpi_env_t env){
-	int min = img->min;
-	int max = img->max;
-	double factor = (float)(new_max - new_min) / (float)(max - min);
+void normalize(int old_min, int old_max, int new_min, int new_max, mpi_env_t env){
+	double factor = (float)(new_max - new_min) / (float)(old_max - old_min);
 
 	int* receive_buffer = env.receive_buffer;
 	int chunk = env.chunk;
 
 	int i;
 	int chunk_size = chunk / omp_get_max_threads();
-	#pragma omp parallel for schedule(static, chunk_size) shared(receive_buffer) private(i) firstprivate(new_min, factor, min)
+	#pragma omp parallel for \
+		schedule(static, chunk_size) \
+		shared(receive_buffer) \
+		private(i) \
+		firstprivate(new_min, factor, old_min)
 		for(i = 0; i < chunk; i++){
-			receive_buffer[i] = (receive_buffer[i] - min) * factor + new_min;
+			receive_buffer[i] = (receive_buffer[i] - old_min) * factor + new_min;
 		}
-
-	img->min = new_min;
-	img->max = new_max;
 }
 
-int get_max(pgmp2_t img, mpi_env_t env){
+int get_max(mpi_env_t env){
 	int* receive_buffer = env.receive_buffer;
 	int chunk = env.chunk;
 
@@ -74,7 +72,7 @@ int get_max(pgmp2_t img, mpi_env_t env){
 	return global_max;
 }
 
-int get_min(pgmp2_t img, mpi_env_t env){
+int get_min(mpi_env_t env){
 	int* receive_buffer = env.receive_buffer;
 	int chunk = env.chunk;
 
@@ -98,9 +96,7 @@ int get_min(pgmp2_t img, mpi_env_t env){
 	return global_min;
 }
 
-void scatter_pixels(pgmp2_t img, mpi_env_t env){
-	int* pixels = img.pixels;
-
+void scatter_pixels(int* pixels, mpi_env_t env){
 	int* buffer_sizes = env.buffer_sizes;
 	int* offsets = env.offsets;
 	int* receive_buffer = env.receive_buffer;
@@ -110,9 +106,7 @@ void scatter_pixels(pgmp2_t img, mpi_env_t env){
 	MPI_Scatterv(pixels, buffer_sizes, offsets, MPI_INT, receive_buffer, chunk, MPI_INT, root, MPI_COMM_WORLD);
 }
 
-void gather_pixels(pgmp2_t* img, mpi_env_t env){
-	int* pixels = img->pixels;
-
+void gather_pixels(int* pixels, mpi_env_t env){
 	int* buffer_sizes = env.buffer_sizes;
 	int* offsets = env.offsets;
 	int* receive_buffer = env.receive_buffer;

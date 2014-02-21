@@ -5,7 +5,6 @@ pgmp2_t init(int width, int height){
 	img->width = width;
 	img->height = height;
 
-	//allocating memory for the matrix
 	img->pixels = (int*) malloc(sizeof(int)*width*height);
 
 	return *img;

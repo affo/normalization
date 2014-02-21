@@ -6,6 +6,7 @@
 	#include <stdlib.h>
 #endif
 
+//relevant only for root process
 typedef struct pgmp2 {
 	int min;
 	int max;

@@ -14,6 +14,8 @@ typedef struct mpi_env {
 	int rank;
 	int root;
 	int chunk;
+
+	//relevant only for root process
 	int* buffer_sizes;
 	int* offsets;
 	int* receive_buffer;
@@ -21,14 +23,14 @@ typedef struct mpi_env {
 
 extern mpi_env_t get_mpi_env(int numtasks, int root, int rank, int length);
 
-extern void normalize(pgmp2_t* img, int new_min, int new_max, mpi_env_t env);
+extern void normalize(int old_min, int old_max, int new_min, int new_max, mpi_env_t env);
 
-extern int get_max(pgmp2_t img, mpi_env_t env);
+extern int get_max(mpi_env_t env);
 
-extern int get_min(pgmp2_t img, mpi_env_t env);
+extern int get_min(mpi_env_t env);
 
-extern void scatter_pixels(pgmp2_t img, mpi_env_t env);
+extern void scatter_pixels(int* pixels, mpi_env_t env);
 
-extern void gather_pixels(pgmp2_t* img, mpi_env_t env);
+extern void gather_pixels(int* pixels, mpi_env_t env);
 
 #endif
