@@ -36,7 +36,7 @@ int main(int argc, char** argv){
 	if(rank == 0){
 		t = clock();
 		img = load(argv[1]);
-		print_time("Image Loading", t, rank);
+		print_time("Loading", t, rank);
 		length = img.width * img.height;
 	}
 	int new_min = atoi(argv[2]);
