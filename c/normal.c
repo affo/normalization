@@ -22,7 +22,7 @@ int main(int argc, char** argv){
 		usage();
 		exit(-1);
 	}
-	openlog("NORM", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
+	openlog("NORM", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL0);
 	
 	int numtasks, rank;
 	clock_t t;
