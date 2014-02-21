@@ -23,6 +23,9 @@ Sample run with ```mpirun```:
 
 In this example we use 4 processes and an output range of [10, 20].
 
+To get the log:
+```normalization/c $ mprun -np 4 a.out ../sample/sample.pmg 10 20; sudo less /var/log/syslog | grep NORM >> norm.log; less norm.log```
+
 ##Creating Input Image
 
 We use the _PGM P2_ format for the input image.
