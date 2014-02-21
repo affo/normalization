@@ -75,11 +75,17 @@ int get_max(pgmp2_t img, mpi_env_t env){
 	int global_max = 0;
 	int local_max = 0;
 
-	#pragma omp parallel for
-		for (int i = 0; i < chunk; i++) {
-  			#pragma omp critical
-			 	if (receive_buffer[i] > local_max) local_max = receive_buffer[i];
-		}
+	#pragma omp parallel shared(receive_buffer, local_max)
+	{
+		int submax = 0, i;		
+		#pragma omp for
+			for (i = 0; i < chunk; i++) {
+			 	if (receive_buffer[i] > submax) submax = receive_buffer[i];
+			}
+
+		#pragma omp critical
+			if(submax > local_max) local_max = submax;
+	}
 
 	MPI_Allreduce(&local_max, &global_max, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
 
@@ -93,15 +99,20 @@ int get_min(pgmp2_t img, mpi_env_t env){
 	int global_min = 255;
 	int local_min = 255;
 
-	#pragma omp parallel for
-		for (int i = 0; i < chunk; i++) {
-  			#pragma omp critical
-			 	if (receive_buffer[i] < local_min) local_min = receive_buffer[i];
-		}
+	#pragma omp parallel shared(receive_buffer, local_min)
+	{
+		int submin = 255, i;		
+		#pragma omp for
+			for (i = 0; i < chunk; i++) {
+			 	if (receive_buffer[i] < submin) submin = receive_buffer[i];
+			}
+
+		#pragma omp critical
+			if(submin < local_min) local_min = submin;
+	}
 
 	MPI_Allreduce(&local_min, &global_min, 1, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
 	
-
 	return global_min;
 }
 
