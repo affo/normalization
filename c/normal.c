@@ -12,7 +12,7 @@ void usage(){
 void print_time(char* str, clock_t t, int rank){
 	if(rank == 0){
 		t = clock() - t;
-		syslog(LOG_NOTICE, "Process %d --> %s: %fs\n", rank, str, ((float)t) / CLOCKS_PER_SEC);
+		syslog(LOG_NOTICE, "Process %d --> %s required %fs\n", rank, str, ((float)t) / CLOCKS_PER_SEC);
 		printf("\t\t%s: %fs\n", str, ((float)t) / CLOCKS_PER_SEC);
 	}
 }
@@ -49,9 +49,9 @@ int main(int argc, char** argv){
 	}
 
 	MPI_Bcast(&length, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
 	mpi_env_t env = get_mpi_env(numtasks, 0, rank, length);
 
-	openlog("NORM", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
 	syslog(LOG_NOTICE, "Process %d --> Scattering\n", rank);
 	scatter_pixels(img.pixels, env);
 
@@ -61,13 +61,11 @@ int main(int argc, char** argv){
 	old_max = get_max(env);
 	print_time("Getting MAX", t, rank);
 
-	openlog("NORM", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
 	syslog(LOG_NOTICE, "Process %d --> Getting MIN\n", rank);
 	t = clock();
 	old_min = get_min(env);
 	print_time("Getting MIN", t, rank);
 
-	openlog("NORM", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
 	syslog(LOG_NOTICE, "Process %d --> Normalizing and Gathering\n", rank);
 	t = clock();
 	normalize(old_min, old_max, new_min, new_max, env);
@@ -75,7 +73,6 @@ int main(int argc, char** argv){
 	print_time("Normalizing", t, rank);
 
 	if(rank == 0){
-		openlog("NORM", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
 		syslog(LOG_NOTICE, "Process %d --> Storing\n", rank);
 		t = clock();
 		store(img);
