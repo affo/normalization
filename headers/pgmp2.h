@@ -1,6 +1,10 @@
 #ifndef _PGMP2_H
 #define _PGMP2_H
-#include <malloc.h>
+#ifndef __APPLE__
+	#include <malloc.h>
+#else
+	#include <stdlib.h>
+#endif
 
 typedef struct pgmp2 {
 	int min;

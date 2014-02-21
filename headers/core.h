@@ -3,7 +3,11 @@
 #include "pgmp2.h"
 #include "mpi.h"
 #include "omp.h"
-#include <malloc.h>
+#ifndef __APPLE__
+	#include <malloc.h>
+#else
+	#include <stdlib.h>
+#endif
 
 typedef struct mpi_env {
 	int numtasks;
