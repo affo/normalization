@@ -2,11 +2,11 @@
 
 mpi_env_t get_mpi_env(int numtasks, int root, int rank, int length){
 	mpi_env_t* env = (mpi_env_t*) malloc(sizeof(mpi_env_t));
-	//if i'm the last one
 	env->numtasks = numtasks;
 	env->root = root;
 	env->rank = rank;
 	int chunk = length / numtasks;
+	//if i'm the last one
 	if(rank == (numtasks - 1)){
 		chunk = length - (chunk * (numtasks - 1));
 	}
