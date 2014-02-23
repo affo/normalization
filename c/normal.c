@@ -79,6 +79,6 @@ int main(int argc, char** argv){
 		print_time("Storing", t, rank);
 		syslog(LOG_NOTICE, "Ended\n");
 	}
-	MPI_Finalize();
 	closelog();
+	MPI_Finalize();
 }
