@@ -22,7 +22,6 @@ int main(int argc, char** argv){
 		usage();
 		exit(-1);
 	}
-	openlog("NORM", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL0);
 	
 	int numtasks, rank;
 	clock_t t;
@@ -31,6 +30,7 @@ int main(int argc, char** argv){
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
 
+	openlog("NORM", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL0);
 	if(rank == 0){
 		syslog(LOG_NOTICE, "Process %d --> Number of processes: %d\n", rank, numtasks);
 	}
