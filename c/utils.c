@@ -1,5 +1,5 @@
 #include "../headers/utils.h"
-#define MAX_LINE_LENGTH 40
+#define MAX_LINE_LENGTH 42
 
 pgmp2_t load(char* filename){
 	FILE* in = NULL;

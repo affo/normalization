@@ -15,11 +15,11 @@ typedef struct mpi_env {
 	int rank;
 	int root;
 	int chunk;
+	int* receive_buffer;
 
 	//relevant only for root process
 	int* buffer_sizes;
 	int* offsets;
-	int* receive_buffer;
 } mpi_env_t;
 
 extern mpi_env_t get_mpi_env(int numtasks, int root, int rank, int length);
