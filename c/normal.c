@@ -69,8 +69,11 @@ int main(int argc, char** argv){
 	syslog(LOG_NOTICE, "Process %d --> Normalizing and Gathering\n", rank);
 	t = clock();
 	normalize(old_min, old_max, new_min, new_max, env);
-	gather_pixels(img.pixels, env);
 	print_time("Normalizing", t, rank);
+
+	t = clock();
+	gather_pixels(img.pixels, env);
+	print_time("Gathering", t, rank);
 
 	if(rank == 0){
 		syslog(LOG_NOTICE, "Process %d --> Storing\n", rank);
