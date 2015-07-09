@@ -19,7 +19,7 @@ Compile with ```mpicc```:
 
 Sample run with ```mpirun```:
 
-```normalization/c $ mprun -np 4 a.out ../sample/sample.pgm 10 20```
+```normalization/c $ mpirun -np 4 ./a.out ../sample/sample.pgm 10 20```
 
 In this example we use 4 processes and an output range of [10, 20].
 
